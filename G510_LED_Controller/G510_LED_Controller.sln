@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "G510_LED_Controller", "G510_LED_Controller\G510_LED_Controller.vcxproj", "{DC3B3B50-DA1F-4B8E-B0BA-469FCA0AD473}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DC3B3B50-DA1F-4B8E-B0BA-469FCA0AD473}.Debug|x64.ActiveCfg = Debug|x64
+		{DC3B3B50-DA1F-4B8E-B0BA-469FCA0AD473}.Debug|x64.Build.0 = Debug|x64
+		{DC3B3B50-DA1F-4B8E-B0BA-469FCA0AD473}.Debug|x86.ActiveCfg = Debug|Win32
+		{DC3B3B50-DA1F-4B8E-B0BA-469FCA0AD473}.Debug|x86.Build.0 = Debug|Win32
+		{DC3B3B50-DA1F-4B8E-B0BA-469FCA0AD473}.Release|x64.ActiveCfg = Release|x64
+		{DC3B3B50-DA1F-4B8E-B0BA-469FCA0AD473}.Release|x64.Build.0 = Release|x64
+		{DC3B3B50-DA1F-4B8E-B0BA-469FCA0AD473}.Release|x86.ActiveCfg = Release|Win32
+		{DC3B3B50-DA1F-4B8E-B0BA-469FCA0AD473}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -24,26 +24,33 @@
  * @defgroup API hidapi API
  */
 
+#pragma once
+
 #ifndef HIDAPI_H__
 #define HIDAPI_H__
 
-#include <wchar.h>
+#include <string>
 
 /** hidapi info structure */
 struct hid_device_info {
+
 	/** Platform-specific device path */
-	char *path;
+	std::string path;
+
 	/** Device Vendor ID */
 	unsigned short vendor_id;
 	/** Device Product ID */
 	unsigned short product_id;
-	/** Manufacturer String */
-	wchar_t *manufacturer_string;
-	/** Product string */
-	wchar_t *product_string;
-
+	
 	/** Pointer to the next device */
 	struct hid_device_info *next;
+
+	//reservered for future use
+	
+	/** Manufacturer String */
+	//wchar_t *manufacturer_string;
+	/** Product string */
+	//wchar_t *product_string;
 };
 
 /** @brief Enumerate the HID Devices.

@@ -28,12 +28,12 @@ http://github.com/signal11/hidapi .
 #include <hidpi.h>
 
 #include "hidapi_mod.h"
+#include "DeviceOpen.h"
 
-extern HANDLE open_device_handle(const char *path);
+//extern HANDLE open_device_handle(const char *path);
 
 struct hid_device_info * hid_enumerate(unsigned short vendor_id, unsigned short product_id)
 {
-	BOOL res;
 	struct hid_device_info *root = NULL; // return object
 	struct hid_device_info *cur_dev = NULL;
 
@@ -54,7 +54,9 @@ struct hid_device_info * hid_enumerate(unsigned short vendor_id, unsigned short 
 
 	// Iterate over each device in the HID class, looking for the right one.
 
-	for (;;) {
+	while(1)
+	{
+		BOOL res = TRUE;
 		HANDLE write_handle = INVALID_HANDLE_VALUE;
 		DWORD required_size = 0;
 		HIDD_ATTRIBUTES attrib;
@@ -67,7 +69,7 @@ struct hid_device_info * hid_enumerate(unsigned short vendor_id, unsigned short 
 
 		if (!res) {
 			// A return of FALSE from this function means that
-			// there are no more devices.
+			// there are no more devices.	
 			break;
 		}
 
@@ -80,6 +82,7 @@ struct hid_device_info * hid_enumerate(unsigned short vendor_id, unsigned short 
 			0,
 			&required_size,
 			NULL);
+
 
 		// Allocate a long enough structure for device_interface_detail_data.
 		device_interface_detail_data = (SP_DEVICE_INTERFACE_DETAIL_DATA_A*)malloc(required_size);
@@ -95,18 +98,13 @@ struct hid_device_info * hid_enumerate(unsigned short vendor_id, unsigned short 
 			NULL,
 			NULL);
 
-		if (!res) {
-			//register_error(dev, "Unable to call SetupDiGetDeviceInterfaceDetail");
-			// Continue to the next device.
-			goto cont;
-
-			//free(device_interface_detail_data);
-
-			//device_index++;
-			//continue;
+		//bad device, move to next
+		if (!res)
+		{
+			free(device_interface_detail_data);
+			device_index++;
+			continue;
 		}
-
-		//wprintf(L"HandleName: %s\n", device_interface_detail_data->DevicePath);
 
 		// Open a handle to the device
 		write_handle = open_device_handle(device_interface_detail_data->DevicePath);
@@ -114,30 +112,24 @@ struct hid_device_info * hid_enumerate(unsigned short vendor_id, unsigned short 
 		// Check validity of write_handle.
 		if (write_handle == INVALID_HANDLE_VALUE) {
 			// Unable to open the device.
-			//register_error(dev, "CreateFile");
-			goto cont_close;
-			//CloseHandle(write_handle);
-			//break;
-		}
+			free(device_interface_detail_data);
+			device_index++;
 
+			continue;
+		}
 
 		// Get the Vendor ID and Product ID for this device.
 		attrib.Size = sizeof(HIDD_ATTRIBUTES);
 		HidD_GetAttributes(write_handle, &attrib);
-		//wprintf(L"Product/Vendor: %x %x\n", attrib.ProductID, attrib.VendorID);
 
 		// Check the VID/PID to see if we should add this
 		// device to the enumeration list.
-		if (attrib.VendorID == vendor_id && attrib.ProductID == product_id) {
+		if (attrib.VendorID == vendor_id && attrib.ProductID == product_id)
+		{
+			std::string str = "";
 
-#define WSTR_LEN 512
-			const char *str;
 			struct hid_device_info *tmp;
 			PHIDP_PREPARSED_DATA pp_data = NULL;
-
-			BOOLEAN res;
-			wchar_t wstr[WSTR_LEN]; // TODO: Determine Size
-			size_t len;
 
 			/* VID/PID match. Create the record. */
 			tmp = (struct hid_device_info*) calloc(1, sizeof(struct hid_device_info));
@@ -152,43 +144,20 @@ struct hid_device_info * hid_enumerate(unsigned short vendor_id, unsigned short 
 			/* Fill out the record */
 			cur_dev->next = NULL;
 			str = device_interface_detail_data->DevicePath;
-			if (str) {
-				len = strlen(str);
-				cur_dev->path = (char*)calloc(len + 1, sizeof(char));
-				//strncpy(cur_dev->path, str, len + 1);
-				strncpy_s(cur_dev->path, len + 1, str, len + 1);
-
-				cur_dev->path[len] = '\0';
+			if (str.length() > 0) {
+				cur_dev->path = str;
 			}
 			else
-				cur_dev->path = NULL;
-
-
-			/* Manufacturer String */
-			res = HidD_GetManufacturerString(write_handle, wstr, sizeof(wstr));
-			wstr[WSTR_LEN - 1] = 0x0000;
-			if (res) {
-				cur_dev->manufacturer_string = _wcsdup(wstr);
-			}
-
-			/* Product String */
-			res = HidD_GetProductString(write_handle, wstr, sizeof(wstr));
-			wstr[WSTR_LEN - 1] = 0x0000;
-			if (res) {
-				cur_dev->product_string = _wcsdup(wstr);
-			}
+				cur_dev->path = "";
 
 			/* VID/PID */
 			cur_dev->vendor_id = attrib.VendorID;
 			cur_dev->product_id = attrib.ProductID;
-
 		}
-
-	cont_close:
-		CloseHandle(write_handle);
-	cont:
-		// We no longer need the detail data. It can be freed
+		
+		//move to next device
 		free(device_interface_detail_data);
+		CloseHandle(write_handle);
 
 		device_index++;
 	}
@@ -204,9 +173,6 @@ void hid_free_enumeration(struct hid_device_info *devs)
 	struct hid_device_info *d = devs;
 	while (d) {
 		struct hid_device_info *next = d->next;
-		free(d->path);
-		free(d->manufacturer_string);
-		free(d->product_string);
 		free(d);
 		d = next;
 	}
