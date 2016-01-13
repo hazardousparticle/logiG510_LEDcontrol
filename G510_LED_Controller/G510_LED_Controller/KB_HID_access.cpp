@@ -5,12 +5,11 @@
 
 #include <iostream>
 
-//this is a modified version of hidapi's hid_open
-//the modified version will return a windows device handle instead of its own.
-HANDLE kb_device_open()
+//this will return a windows device handle of the vid and pid given.
+HANDLE kb_device_open(unsigned short vendor_id, unsigned short product_id)
 {
-	const unsigned short vendor_id = LOGI_510_VID;
-	const unsigned short product_id = LOGI_510_PID;
+	//const unsigned short vendor_id = LOGI_510_VID;
+	//const unsigned short product_id = LOGI_510_PID;
 	
 	if (!vendor_id || !product_id)
 	{
@@ -38,13 +37,15 @@ HANDLE kb_device_open()
 	if (path_to_open.length() > 0) {
 		/* Open the device */
 		handle = open_device_handle(path_to_open);
+		std::cout << "Found device: " << path_to_open << std::endl;
 	}
-
-	std::cout << "Found device: " << path_to_open << std::endl;
 
 	hid_free_enumeration(devs);
 
 	return handle;
+
+	//always check the returned value for a valid handle.
+	//returns NULL if device could not be connected.
 }
 
 //close the keyboard device

@@ -15,12 +15,27 @@ HANDLE dev_handle = NULL;
 
 int main(int argc, char* argv[])
 {
-	dev_handle = kb_device_open();
+	dev_handle = kb_device_open(LOGI_510_VID, LOGI_510_PID);
 
-	if (NotValidHandle(dev_handle))
+	if (NotValidHandle(dev_handle))//check if g510 found
 	{
-		cout << "Error" << endl;
-		return 0;
+		cout << "No G510 keyboard found." << endl;
+
+		//if not check for a g110
+		dev_handle = kb_device_open(LOGI_510_VID, LOGI_110_PID);
+		if (NotValidHandle(dev_handle))
+		{
+			cout << "No G110 keyboard found." << endl;
+
+			return 0;
+		}
+		else
+		{
+			cout << "TODO: modify LOGI_510_COLOR_CHANGE_CMD according to g110" << endl;
+			cout << "G110 device found but currently not supported" << endl;
+			return 0;
+		}
+
 	}
 
 	Color *c1 = getL510_LEDColor(dev_handle);

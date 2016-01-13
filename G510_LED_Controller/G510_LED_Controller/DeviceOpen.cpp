@@ -2,14 +2,13 @@
 #include "Stringapiset.h"
 
 //opens devices
-
 HANDLE open_device_handle(std::string path)
 {
 
 	if (path == "" || path.length() < 1)
 	{
 		//bad path to device
-		return INVALID_HANDLE_VALUE;
+		return NULL;
 	}
 
 	HANDLE handle;
