@@ -1,3 +1,5 @@
+This is the obsolete version. For cleaner more efficient code and significantly less reliance on hidapi see rainbow510.
+
 # logitech G510 LED color control
 application for controlling LED color of logitech g510 keyboards
 A simple project  for controlling the LED color of logitech g510 keyboards. by default the app sweeps through each color hue (rainbow effect).
